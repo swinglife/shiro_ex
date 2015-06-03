@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+				http://www.springframework.org/schema/aop
+				http://www.springframework.org/schema/mvc
+				 http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+				http://www.springframework.org/schema/aop/spring-aop-3.2.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	<beans:import resource="root-context.xml" />
+	<context:component-scan base-package="org.swinglife.controller"></context:component-scan>
+
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	<mvc:resources mapping="/upload/**" location="/upload/" />
+
+	<mvc:annotation-driven
+		content-negotiation-manager="contentNegotiationManager" />
+	<!-- 解决spring3.2 使用@ResponseBody返回值为json或者xml的错误 -->
+	<beans:bean id="contentNegotiationManager"
+		class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+		<beans:property name="favorPathExtension" value="false" />
+		<beans:property name="favorParameter" value="false" />
+		<!-- 表示不开启AcceptHeader 来解决json返回406的错误 -->
+		<beans:property name="ignoreAcceptHeader" value="false" />
+		<beans:property name="mediaTypes">
+			<beans:value>
+				atom=application/atom+xml
+				html=text/html
+				json=application/json
+				*=*/*
+			</beans:value>
+		</beans:property>
+	</beans:bean>
+	<beans:bean
+		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+	<beans:bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+
+	<!-- MVC拦截器 -->
+	<!-- <mvc:interceptors> <mvc:interceptor> <mvc:mapping path="/manager/*.html" 
+		/> -->
+	<!-- 定义在mvc:interceptor下面的表示是对特定的请求才进行拦截的 -->
+	<!-- <beans:bean id="sessionListener" class="org.swinglife.util.SessionListener" 
+		/> </mvc:interceptor> </mvc:interceptors> -->
+	<beans:bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:prefix="/WEB-INF/page/" p:suffix=".jsp">
+	</beans:bean>
+	<!-- 配置NegotiationgViewResolver -->
+
+	<!-- 文件上传 -->
+	<beans:bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+		p:defaultEncoding="UTF-8" p:maxUploadSize="999999999" p:uploadTempDir="upload/temp" />
+
+
+</beans:beans>
